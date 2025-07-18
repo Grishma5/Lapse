@@ -27,16 +27,21 @@ const Navbar = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (location.hash) {
-      const element = document.querySelector(location.hash);
-      if (element) {
-        setTimeout(() => {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-      }
+useEffect(() => {
+  // Only handle hash navigation on the home page
+  if (location.pathname === '/' && location.hash) {
+    const element = document.querySelector(location.hash);
+    if (element) {
+      setTimeout(() => {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     }
-  }, [location]);
+  }
+  // For other pages, scroll to top
+  else if (location.pathname !== '/') {
+    window.scrollTo(0, 0);
+  }
+}, [location]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -49,11 +54,13 @@ const Navbar = () => {
 
   const handleHashNavigation = (hash) => {
     if (location.pathname === '/') {
+      // Already on homepage, just scroll to section
       const element = document.querySelector(hash);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
     } else {
+      // Navigate to homepage with hash
       navigate('/' + hash);
     }
     setIsMenuOpen(false);
@@ -106,25 +113,16 @@ const Navbar = () => {
             >
               About Us
             </NavLink>
+            
             {isLoggedIn && (
-              <>
-                <NavLink 
-                  to="/tasks" 
-                  className={({ isActive }) => 
-                    `text-[#A7ABDE] hover:text-[#FFA5D6] transition-colors ${isActive ? 'font-bold text-[#FFA5D6]' : ''}`
-                  }
-                >
-                  Tasks
-                </NavLink>
-                <NavLink 
-                  to="/profile" 
-                  className={({ isActive }) => 
-                    `text-[#A7ABDE] hover:text-[#FFA5D6] transition-colors ${isActive ? 'font-bold text-[#FFA5D6]' : ''}`
-                  }
-                >
-                  Profile
-                </NavLink>
-              </>
+              <NavLink 
+                to="/tasks" 
+                className={({ isActive }) => 
+                  `text-[#A7ABDE] hover:text-[#FFA5D6] transition-colors ${isActive ? 'font-bold text-[#FFA5D6]' : ''}`
+                }
+              >
+                Tasks
+              </NavLink>
             )}
             {isLoggedIn && isAdmin && (
               <NavLink 
@@ -201,26 +199,15 @@ const Navbar = () => {
               About Us
             </NavLink>
             {isLoggedIn && (
-              <>
-                <NavLink 
-                  to="/tasks" 
-                  className={({ isActive }) => 
-                    `block text-[#A7ABDE] hover:text-[#FFA5D6] ${isActive ? 'font-bold text-[#FFA5D6]' : ''}`
-                  }
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Tasks
-                </NavLink>
-                <NavLink 
-                  to="/profile" 
-                  className={({ isActive }) => 
-                    `block text-[#A7ABDE] hover:text-[#FFA5D6] ${isActive ? 'font-bold text-[#FFA5D6]' : ''}`
-                  }
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Profile
-                </NavLink>
-              </>
+              <NavLink 
+                to="/tasks" 
+                className={({ isActive }) => 
+                  `block text-[#A7ABDE] hover:text-[#FFA5D6] ${isActive ? 'font-bold text-[#FFA5D6]' : ''}`
+                }
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Tasks
+              </NavLink>
             )}
             {isLoggedIn && isAdmin && (
               <NavLink 
@@ -243,8 +230,7 @@ const Navbar = () => {
             ) : (
               <NavLink 
                 to="/register"
-                className="block w-full bg-gradient-to-r from-[#FFA5D6] to-[#A7ABDE] text Lukas@123
-                text-[#F0F0F5] px-6 py-2 rounded-lg text-center"
+                className="block w-full bg-gradient-to-r from-[#FFA5D6] to-[#A7ABDE] text-[#F0F0F5] px-6 py-2 rounded-lg text-center"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Get Started

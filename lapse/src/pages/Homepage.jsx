@@ -214,9 +214,9 @@ const LapseHomepage = () => {
                 <Link to="/register" className="bg-gradient-to-r from-pink-400 to-purple-300 text-white px-6 py-3 rounded-full hover:from-pink-400 hover:to-purple-200 transition-all duration-300 shadow-lg hover:shadow-xl">
                   Get Started
                 </Link>
-                <button className="text-purple-400 border-2 border-purple-300 px-6 py-3 rounded-full hover:bg-purple-50 transition-colors">
+                <Link to="/aboutus" className="text-purple-400 border-2 border-purple-300 px-6 py-3 rounded-full hover:bg-purple-50 transition-colors">
                   Learn More
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -254,9 +254,6 @@ const LapseHomepage = () => {
                   <span className="text-gray-700">Built with modern web technologies</span>
                 </div>
               </div>
-              <button className="bg-gradient-to-r from-pink-400 to-purple-300 text-white px-8 py-3 rounded-full hover:from-pink-400 hover:to-purple-300 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl">
-                Learn More
-              </button>
             </div>
             <div className="relative">
               <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-3xl p-8 h-96 flex items-center justify-center shadow-2xl">

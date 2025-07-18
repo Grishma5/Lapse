@@ -5,7 +5,7 @@ const AboutUs = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
       {/* Hero Section */}
-      <section className="py-20 text-center">
+      <section className="py-40 text-center">
         <div className="max-w-4xl mx-auto px-4">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-800 mb-6">
             About{' '}

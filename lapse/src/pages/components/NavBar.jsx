@@ -27,7 +27,6 @@ const Navbar = () => {
     }
   }, []);
 
-  // Handle hash navigation when location changes
   useEffect(() => {
     if (location.hash) {
       const element = document.querySelector(location.hash);
@@ -50,13 +49,11 @@ const Navbar = () => {
 
   const handleHashNavigation = (hash) => {
     if (location.pathname === '/') {
-      // Already on homepage, just scroll to section
       const element = document.querySelector(hash);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
     } else {
-      // Navigate to homepage with hash
       navigate('/' + hash);
     }
     setIsMenuOpen(false);
@@ -109,16 +106,25 @@ const Navbar = () => {
             >
               About Us
             </NavLink>
-            
             {isLoggedIn && (
-              <NavLink 
-                to="/tasks" 
-                className={({ isActive }) => 
-                  `text-[#A7ABDE] hover:text-[#FFA5D6] transition-colors ${isActive ? 'font-bold text-[#FFA5D6]' : ''}`
-                }
-              >
-                Tasks
-              </NavLink>
+              <>
+                <NavLink 
+                  to="/tasks" 
+                  className={({ isActive }) => 
+                    `text-[#A7ABDE] hover:text-[#FFA5D6] transition-colors ${isActive ? 'font-bold text-[#FFA5D6]' : ''}`
+                  }
+                >
+                  Tasks
+                </NavLink>
+                <NavLink 
+                  to="/profile" 
+                  className={({ isActive }) => 
+                    `text-[#A7ABDE] hover:text-[#FFA5D6] transition-colors ${isActive ? 'font-bold text-[#FFA5D6]' : ''}`
+                  }
+                >
+                  Profile
+                </NavLink>
+              </>
             )}
             {isLoggedIn && isAdmin && (
               <NavLink 
@@ -195,15 +201,26 @@ const Navbar = () => {
               About Us
             </NavLink>
             {isLoggedIn && (
-              <NavLink 
-                to="/tasks" 
-                className={({ isActive }) => 
-                  `block text-[#A7ABDE] hover:text-[#FFA5D6] ${isActive ? 'font-bold text-[#FFA5D6]' : ''}`
-                }
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Tasks
-              </NavLink>
+              <>
+                <NavLink 
+                  to="/tasks" 
+                  className={({ isActive }) => 
+                    `block text-[#A7ABDE] hover:text-[#FFA5D6] ${isActive ? 'font-bold text-[#FFA5D6]' : ''}`
+                  }
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Tasks
+                </NavLink>
+                <NavLink 
+                  to="/profile" 
+                  className={({ isActive }) => 
+                    `block text-[#A7ABDE] hover:text-[#FFA5D6] ${isActive ? 'font-bold text-[#FFA5D6]' : ''}`
+                  }
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Profile
+                </NavLink>
+              </>
             )}
             {isLoggedIn && isAdmin && (
               <NavLink 
@@ -226,7 +243,8 @@ const Navbar = () => {
             ) : (
               <NavLink 
                 to="/register"
-                className="block w-full bg-gradient-to-r from-[#FFA5D6] to-[#A7ABDE] text-[#F0F0F5] px-6 py-2 rounded-lg text-center"
+                className="block w-full bg-gradient-to-r from-[#FFA5D6] to-[#A7ABDE] text Lukas@123
+                text-[#F0F0F5] px-6 py-2 rounded-lg text-center"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Get Started

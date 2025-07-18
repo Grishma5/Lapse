@@ -1,139 +1,133 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Clock, Target, CheckCircle } from 'lucide-react';
-
-const FloatingShapes = () => {
-  const shapes = new Array(8).fill(null);
-  const colors = ['#FFB3D9', '#E6D5F0', '#D4B5F7'];
-  const shapeTypes = ['rounded-full', 'rounded-lg', 'rounded-xl'];
-
-  return (
-    <div className="absolute inset-0 overflow-hidden z-0">
-      {shapes.map((_, i) => (
-        <div
-          key={i}
-          className={`absolute w-4 h-4 ${shapeTypes[i % 3]} opacity-40 animate-float`}
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            backgroundColor: colors[i % 3],
-            animationDelay: `${Math.random() * 3}s`,
-            animationDuration: `${4 + Math.random() * 4}s`,
-          }}
-        />
-      ))}
-    </div>
-  );
-};
+import { CheckCircle } from 'lucide-react';
 
 const AboutUs = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
-      <FloatingShapes />
-
-
-
       {/* Hero Section */}
-      <section className="relative py-24 text-center">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
-        <div className="inline-flex items-center px-4 py-2 bg-white/60 backdrop-blur-sm rounded-full text-gray-700 text-sm font-medium mb-6 shadow-sm">
-      <CheckCircle className="w-4 h-4 mr-2 text-pink-400" />
-      Simple. Organized. Done.
-      </div>
-      <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-800">
-      About <span className="bg-gradient-to-r from-pink-300 to-purple-200 bg-clip-text text-transparent">Lapse</span>
-      </h1>
-      <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-      Lapse is a task management app designed to make your life simpler and more organized.
-      </p>
-      </div>
+      <section className="py-20 text-center">
+        <div className="max-w-4xl mx-auto px-4">
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-800 mb-6">
+            About{' '}
+            <span className="bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
+              Lapse
+            </span>
+          </h1>
+          
+          <p className="text-xl text-gray-700 max-w-3xl mx-auto mb-8 leading-relaxed">
+            Lapse is a simple task management app created to help you stay organized and manage tasks effortlessly.
+          </p>
+          
+          <div className="inline-flex items-center px-6 py-3 bg-white/70 backdrop-blur-md rounded-full shadow-lg">
+            <CheckCircle className="w-5 h-5 mr-3 text-pink-500" />
+            <span className="font-semibold text-gray-700">Built for simplicity and efficiency</span>
+          </div>
+        </div>
       </section>
 
-      {/* Our Story Section */}
-      <section className="py-16 bg-white/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+      {/* What is Lapse Section */}
+      <section className="py-16 bg-white/60 backdrop-blur-sm">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
-                Our <span className="bg-gradient-to-r from-pink-300 to-purple-200 bg-clip-text text-transparent">Story</span>
-              </h2>
-              <p className="text-lg text-gray-600 mb-4 leading-relaxed">
-                I'm Grishma, a student who built Lapse to tackle my own struggle with staying organized. I wanted a tool that’s simple yet powerful.
+              <h2 className="text-3xl font-bold text-gray-800 mb-6">What is Lapse?</h2>
+              <p className="text-lg text-gray-700 leading-relaxed">
+                Lapse is a user-friendly app designed by Grishma, a student, to simplify task management for students, professionals, and anyone seeking clarity in their daily tasks.
               </p>
-              <p className="text-lg text-gray-600 mb-4 leading-relaxed">
-                Lapse helps students, professionals, and anyone manage tasks without complexity.
-              </p>
-              <div className="flex items-center text-gray-600">
-                <div className="w-6 h-6 bg-gradient-to-br from-pink-400 to-purple-300 rounded-full flex items-center justify-center mr-3">
-                  <CheckCircle className="w-4 h-4 text-white" />
-                </div>
-                <span className="font-medium">Made for simplicity.</span>
-              </div>
             </div>
-            <div className="relative">
-              <div className="bg-gradient-to-br from-pink-100/80 to-purple-100/80 rounded-3xl p-8 shadow-xl">
-                <div className="text-center">
-                  <div className="w-24 h-24 bg-gradient-to-br from-pink-400 to-purple-300 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
-                    <Target className="w-12 h-12 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-3">Our Goal</h3>
-                  <p className="text-gray-600">Keep task management clear and effective.</p>
+            
+            {/* Illustration */}
+            <div className="flex justify-center">
+              <div className="relative">
+                <div className="w-80 h-80 bg-gradient-to-br from-pink-200 to-purple-200 rounded-3xl flex items-center justify-center shadow-xl">
+                  {/* Task management illustration */}
+                  <svg className="w-48 h-48" viewBox="0 0 200 200" fill="none">
+                    {/* Person sitting on tasks */}
+                    <circle cx="100" cy="80" r="20" fill="#8B5CF6" opacity="0.8"/>
+                    <rect x="85" y="100" width="30" height="40" rx="15" fill="#EC4899"/>
+                    <rect x="90" y="95" width="20" height="8" rx="4" fill="#F3E8FF"/>
+                    
+                    {/* Task list/clipboard */}
+                    <rect x="60" y="140" width="80" height="50" rx="8" fill="white" stroke="#E5E7EB" strokeWidth="2"/>
+                    <rect x="70" y="150" width="60" height="4" rx="2" fill="#D1D5DB"/>
+                    <rect x="70" y="160" width="45" height="4" rx="2" fill="#D1D5DB"/>
+                    <rect x="70" y="170" width="50" height="4" rx="2" fill="#D1D5DB"/>
+                    
+                    {/* Check marks */}
+                    <circle cx="75" cy="152" r="3" fill="#10B981"/>
+                    <polyline points="73,152 75,154 77,150" stroke="white" strokeWidth="1" fill="none"/>
+                    <circle cx="75" cy="172" r="3" fill="#10B981"/>
+                    <polyline points="73,172 75,174 77,170" stroke="white" strokeWidth="1" fill="none"/>
+                    
+                    {/* Floating elements */}
+                    <circle cx="40" cy="60" r="8" fill="#F472B6" opacity="0.6"/>
+                    <circle cx="160" cy="70" r="6" fill="#A855F7" opacity="0.6"/>
+                    <circle cx="150" cy="40" r="4" fill="#EC4899" opacity="0.6"/>
+                  </svg>
                 </div>
               </div>
-              <div className="absolute top-4 right-4 w-8 h-8 bg-pink-300 rounded-full opacity-60 animate-bounce"></div>
-              <div className="absolute bottom-6 left-6 w-6 h-6 bg-purple-300 rounded-full opacity-60 animate-pulse"></div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Why Lapse Section */}
-      <section className="py-16 bg-gradient-to-br from-pink-100/50 to-purple-100/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-              Why <span className="bg-gradient-to-r from-pink-300 to-purple-200 bg-clip-text text-transparent">Lapse</span>?
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Lapse is built for ease, security, and clarity.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-              <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white mb-4 shadow-lg">
-                <CheckCircle className="w-6 h-6" />
+      {/* Spacer */}
+      <div className="h-16"></div>
+
+      {/* How was it made Section */}
+      <section className="py-16">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Illustration */}
+            <div className="flex justify-center order-2 md:order-1">
+              <div className="relative">
+                <div className="w-80 h-80 bg-gradient-to-br from-purple-200 to-indigo-200 rounded-3xl flex items-center justify-center shadow-xl">
+                  {/* Developer illustration */}
+                  <svg className="w-48 h-48" viewBox="0 0 200 200" fill="none">
+                    {/* Person coding */}
+                    <circle cx="100" cy="70" r="18" fill="#8B5CF6" opacity="0.8"/>
+                    <rect x="88" y="88" width="24" height="35" rx="12" fill="#EC4899"/>
+                    <rect x="92" y="85" width="16" height="6" rx="3" fill="#F3E8FF"/>
+                    
+                    {/* Laptop */}
+                    <rect x="60" y="120" width="80" height="45" rx="6" fill="#374151"/>
+                    <rect x="65" y="125" width="70" height="35" rx="4" fill="#1F2937"/>
+                    
+                    {/* Code on screen */}
+                    <rect x="70" y="130" width="25" height="3" rx="1" fill="#10B981"/>
+                    <rect x="70" y="136" width="35" height="3" rx="1" fill="#F59E0B"/>
+                    <rect x="75" y="142" width="30" height="3" rx="1" fill="#3B82F6"/>
+                    <rect x="75" y="148" width="20" height="3" rx="1" fill="#EF4444"/>
+                    <rect x="70" y="154" width="40" height="3" rx="1" fill="#8B5CF6"/>
+                    
+                    {/* Tech stack icons floating around */}
+                    <circle cx="45" cy="50" r="12" fill="#61DAFB" opacity="0.8"/>
+                    <text x="45" y="55" textAnchor="middle" fontSize="8" fill="white" fontWeight="bold">R</text>
+                    
+                    <rect x="140" y="45" width="20" height="20" rx="4" fill="#06B6D4" opacity="0.8"/>
+                    <text x="150" y="58" textAnchor="middle" fontSize="6" fill="white" fontWeight="bold">CSS</text>
+                    
+                    <circle cx="160" cy="95" r="8" fill="#F472B6" opacity="0.6"/>
+                    <text x="160" y="98" textAnchor="middle" fontSize="6" fill="white">JS</text>
+                    
+                    {/* Sparkles */}
+                    <circle cx="35" cy="90" r="2" fill="#FBBF24" opacity="0.8"/>
+                    <circle cx="170" cy="75" r="2" fill="#F472B6" opacity="0.8"/>
+                    <circle cx="145" cy="25" r="2" fill="#8B5CF6" opacity="0.8"/>
+                  </svg>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-gray-800 mb-3">Easy to Use</h3>
-              <p className="text-gray-600">Designed for a seamless experience.</p>
             </div>
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-500 rounded-xl flex items-center justify-center text-white mb-4 shadow-lg">
-                <CheckCircle className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-gray-800 mb-3">Secure</h3>
-              <p className="text-gray-600">Your data is protected.</p>
-            </div>
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-              <div className="w-12 h-12 bg-gradient-to-br from-indigo-400 to-indigo-500 rounded-xl flex items-center justify-center text-white mb-4 shadow-lg">
-                <CheckCircle className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-gray-800 mb-3">Clear</h3>
-              <p className="text-gray-600">No clutter, just what you need.</p>
+            
+            <div className="order-1 md:order-2">
+              <h2 className="text-3xl font-bold text-gray-800 mb-6">How was it made?</h2>
+              <p className="text-lg text-gray-700 leading-relaxed">
+                Lapse was built using modern web technologies: React for the frontend, Tailwind CSS for styling, and Lucide icons for a clean, intuitive interface.
+              </p>
             </div>
           </div>
         </div>
       </section>
-
-
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-20px) rotate(180deg); }
-        }
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-      `}</style>
     </div>
   );
 };

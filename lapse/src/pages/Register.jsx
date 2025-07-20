@@ -30,9 +30,22 @@ const Register = () => {
       data.append('password', password);
       if (image) data.append('image', image);
 
-      const response = await createUserApi(data);
+      // Log FormData for debugging
+      console.log('FormData Payload:');
+      for (let pair of data.entries()) {
+        console.log(`${pair[0]}: ${pair[1]}`);
+      }
 
-      if (response?.data?.success) {
+      const response = await createUserApi(data);
+      console.log('API Response:', response);
+
+      // Check for success using HTTP status or response data
+      if (
+        response.status === 200 ||
+        response.status === 201 ||
+        response?.data?.success ||
+        response?.data?.status === 'success'
+      ) {
         setIsLoading(false);
         toast.success('Registration successful! Welcome to Lapse!');
         setTimeout(() => navigate('/login'), 1000);
@@ -42,8 +55,9 @@ const Register = () => {
       }
     } catch (err) {
       setIsLoading(false);
-      toast.error(err?.response?.data?.message || 'An error occurred during registration');
-      console.error('Registration error:', err);
+      console.error('Registration error:', err.response || err);
+      const errorMessage = err?.response?.data?.message || 'An error occurred during registration';
+      toast.error(errorMessage);
     }
   };
 
@@ -159,7 +173,7 @@ const Register = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || !name || !email || !password}
               className="w-full bg-gradient-to-r from-pink-400 to-purple-300 text-white py-3 px-6 rounded-xl font-semibold text-lg hover:from-pink-400 hover:to-purple-300 transition-all duration-300 transform hover:scale-105 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center group"
             >
               {isLoading ? (

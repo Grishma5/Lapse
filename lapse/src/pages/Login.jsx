@@ -12,42 +12,61 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const submit = async (e) => {
-    e.preventDefault();
+ const submit = async (e) => {
+  e.preventDefault();
 
-    if (!email || !password) {
-      toast.error('Please fill in all fields');
-      return;
-    }
+  if (!email || !password) {
+    toast.error('Please fill in all fields');
+    return;
+  }
 
-    setIsLoading(true);
+  setIsLoading(true);
 
-    try {
-      const data = { email, password };
-      const response = await loginUserApi(data);
+  try {
+    const data = { email, password };
+    console.log('Login Payload:', data);
 
-      if (response?.data?.success) {
-        setIsLoading(false);
-        localStorage.setItem('token', response.data.token);
-        toast.success('Login successful! Welcome back to Lapse!');
-        const decode = jwtDecode(response.data.token);
-        setTimeout(() => {
-          if (decode.role === 'admin') {
-            navigate('/dashboard');
-          } else {
-            navigate('/tasks');
-          }
-        }, 1000);
-      } else {
-        setIsLoading(false);
-        toast.error(response?.data?.message || 'Login failed');
+    const response = await loginUserApi(data);
+    console.log('API Response:', response);
+
+    // Fix: access token from response.data.data.token
+    const resData = response?.data?.data;
+
+    if (
+      response.status === 200 &&
+      resData?.success
+    ) {
+      const token = resData?.token;
+      console.log('Extracted Token:', token);
+
+      if (!token || typeof token !== 'string') {
+        toast.error('Invalid or missing token from server. Please contact support.');
+        return;
       }
-    } catch (err) {
-      setIsLoading(false);
-      toast.error(err?.response?.data?.message || 'An error occurred during login');
-      console.error('Login error:', err);
+
+      localStorage.setItem('token', token);
+      toast.success('Login successful! Welcome back to Lapse!');
+      const decode = jwtDecode(token);
+
+      setTimeout(() => {
+        if (decode.role === 'admin') {
+          navigate('/dashboard');
+        } else {
+          navigate('/tasks');
+        }
+      }, 1000);
+    } else {
+      toast.error(resData?.message || 'Login failed');
     }
-  };
+  } catch (err) {
+    console.error('Login error:', err.response || err);
+    const errorMessage = err?.response?.data?.message || 'An error occurred during login';
+    toast.error(errorMessage);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b flex items-center justify-center p-4 pt-20">
@@ -118,7 +137,7 @@ const Login = () => {
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || !email || !password}
               className="w-full bg-gradient-to-r from-pink-400 to-purple-300 text-white py-3 px-6 rounded-xl font-semibold text-lg hover:from-pink-300 hover:to-purple-300 transition-all duration-300 transform hover:scale-105 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center group"
             >
               {isLoading ? (

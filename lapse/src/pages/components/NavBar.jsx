@@ -128,16 +128,6 @@ const Navbar = () => {
               About Us
             </NavLink>
             
-            {isLoggedIn && (
-              <NavLink 
-                to="/tasks" 
-                className={({ isActive }) => 
-                  `text-[#A7ABDE] hover:text-[#FFA5D6] transition-colors ${isActive ? 'font-bold text-[#FFA5D6]' : ''}`
-                }
-              >
-                Tasks
-              </NavLink>
-            )}
             {isLoggedIn && isAdmin && (
               <NavLink 
                 to="/dashboard" 
@@ -158,6 +148,13 @@ const Navbar = () => {
                 </button>
                 {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-[#ECD2E0]/50 z-50">
+                    <NavLink 
+                      to="/tasks"
+                      className="block px-4 py-2 text-[#A7ABDE] hover:text-[#FFA5D6] hover:bg-[#FFD6EE]/10 transition-colors"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Tasks
+                    </NavLink>
                     <NavLink 
                       to="/profile"
                       className="block px-4 py-2 text-[#A7ABDE] hover:text-[#FFA5D6] hover:bg-[#FFD6EE]/10 transition-colors"
@@ -231,17 +228,7 @@ const Navbar = () => {
             >
               About Us
             </NavLink>
-            {isLoggedIn && (
-              <NavLink 
-                to="/tasks" 
-                className={({ isActive }) => 
-                  `block text-[#A7ABDE] hover:text-[#FFA5D6] ${isActive ? 'font-bold text-[#FFA5D6]' : ''}`
-                }
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Tasks
-              </NavLink>
-            )}
+
             {isLoggedIn && isAdmin && (
               <NavLink 
                 to="/dashboard" 
@@ -255,6 +242,15 @@ const Navbar = () => {
             )}
             {isLoggedIn ? (
               <>
+              <NavLink 
+                to="/tasks" 
+                className={({ isActive }) => 
+                  `block text-[#A7ABDE] hover:text-[#FFA5D6] ${isActive ? 'font-bold text-[#FFA5D6]' : ''}`
+                }
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Tasks
+              </NavLink>
                 <NavLink 
                   to="/#profile"
                   className="block w-full text-left text-[#A7ABDE] hover:text-[#FFA5D6]"

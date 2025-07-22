@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast';
 import { 
   User, Save, X, Edit3, CheckCircle, Circle, Camera, 
   Calendar, Trophy, Target, TrendingUp, Activity,
-  Mail, Phone, MapPin, Clock, Star, Award
+  Mail, Award
 } from 'lucide-react';
 import { getUserProfileApi, updateUserProfileApi, getTasksApi } from '../Api/Api';
 
@@ -13,9 +13,6 @@ const UserProfile = () => {
     name: '', 
     email: '', 
     profilePicture: '',
-    phone: '',
-    location: '',
-    bio: '',
     joinedDate: ''
   });
   const [tasks, setTasks] = useState([]);
@@ -23,14 +20,9 @@ const UserProfile = () => {
   const [formData, setFormData] = useState({ 
     name: '', 
     email: '', 
-    profilePicture: '',
-    phone: '',
-    location: '',
-    bio: ''
+    profilePicture: null
   });
   const [greeting, setGreeting] = useState('');
-  // eslint-disable-next-line no-unused-vars
-  const [activeTab, setActiveTab] = useState('overview');
   const [imagePreview, setImagePreview] = useState('');
   const navigate = useNavigate();
 
@@ -59,7 +51,6 @@ const UserProfile = () => {
       toast.error('Please log in');
       navigate('/login');
     } else {
-      console.log('Token:', localStorage.getItem('token'));
       fetchUserProfile();
       fetchTasks();
     }
@@ -68,29 +59,22 @@ const UserProfile = () => {
   const fetchUserProfile = async () => {
     try {
       const response = await getUserProfileApi();
-      console.log('Profile response:', response);
       const data = response.data;
       if (data?.success || data?.data?.success) {
         const userData = data.user || data.data.user;
         const userInfo = {
           name: userData.name || userData.username || '',
           email: userData.email || '',
-          profilePicture: userData.profilePicture || userData.image || '',
-          phone: userData.phone || '',
-          location: userData.location || '',
-          bio: userData.bio || '',
+          profilePicture: userData.profilePicture || '',
           joinedDate: userData.createdAt || userData.joinedDate || new Date().toISOString()
         };
         setUser(userInfo);
         setFormData({
           name: userInfo.name,
           email: userInfo.email,
-          profilePicture: userInfo.profilePicture,
-          phone: userInfo.phone,
-          location: userInfo.location,
-          bio: userInfo.bio,
+          profilePicture: null
         });
-        setImagePreview(userInfo.profilePicture);
+        setImagePreview(userInfo.profilePicture ? `${import.meta.env.VITE_API_BASE_URL}/uploads/${userInfo.profilePicture}` : '');
       } else {
         toast.error(data?.message || 'Failed to fetch profile');
       }
@@ -119,22 +103,21 @@ const UserProfile = () => {
       setFormData({ 
         name: user.name, 
         email: user.email, 
-        profilePicture: user.profilePicture,
-        phone: user.phone,
-        location: user.location,
-        bio: user.bio
+        profilePicture: null
       });
-      setImagePreview(user.profilePicture);
+      setImagePreview(user.profilePicture ? `${import.meta.env.VITE_API_BASE_URL}/uploads/${user.profilePicture}` : '');
     } else {
-      setImagePreview(user.profilePicture);
+      setImagePreview(user.profilePicture ? `${import.meta.env.VITE_API_BASE_URL}/uploads/${user.profilePicture}` : '');
     }
     setIsEditing(!isEditing);
   };
 
   const handleImageChange = (e) => {
-    const url = e.target.value;
-    setFormData({ ...formData, profilePicture: url });
-    setImagePreview(url);
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({ ...formData, profilePicture: file });
+      setImagePreview(URL.createObjectURL(file)); // Preview the uploaded file
+    }
   };
 
   const handleSubmit = async () => {
@@ -142,16 +125,14 @@ const UserProfile = () => {
       toast.error('Name and email are required');
       return;
     }
-
-    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
       toast.error('Please enter a valid email address');
       return;
     }
-
     try {
       const response = await updateUserProfileApi(formData);
       if (response?.data?.success) {
-        const updatedUser = { ...user, ...formData };
+        const updatedUser = { ...user, ...formData, profilePicture: response.data.user.profilePicture };
         setUser(updatedUser);
         setIsEditing(false);
         toast.success('Profile updated successfully! 🎉');
@@ -159,8 +140,8 @@ const UserProfile = () => {
         toast.error(response?.data?.message || 'Failed to update profile');
       }
     } catch (error) {
-      toast.error('Error updating profile');
-      console.error('Update profile error:', error);
+      console.error('Update profile error:', error.response ? error.response.data : error.message);
+      toast.error(error.response?.data?.message || 'Error updating profile');
     }
   };
 
@@ -187,9 +168,9 @@ const UserProfile = () => {
           <div className="h-32 bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 relative">
             <div className="absolute -bottom-16 left-8">
               <div className="relative">
-                {imagePreview || user.profilePicture ? (
+                {imagePreview ? (
                   <img
-                    src={imagePreview || user.profilePicture}
+                    src={imagePreview}
                     alt="Profile"
                     className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
                   />
@@ -221,22 +202,7 @@ const UserProfile = () => {
                       <span className="font-cute">{user.email}</span>
                     </div>
                   )}
-                  {user.phone && (
-                    <div className="flex items-center space-x-2">
-                      <Phone className="w-4 h-4" />
-                      <span className="font-cute">{user.phone}</span>
-                    </div>
-                  )}
-                  {user.location && (
-                    <div className="flex items-center space-x-2">
-                      <MapPin className="w-4 h-4" />
-                      <span className="font-cute">{user.location}</span>
-                    </div>
-                  )}
                 </div>
-                {user.bio && (
-                  <p className="text-gray-600 font-cute max-w-lg">{user.bio}</p>
-                )}
               </div>
               
               <div className="flex space-x-3">
@@ -288,55 +254,15 @@ const UserProfile = () => {
                     />
                   </div>
                   
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 font-cute">
-                      Phone
-                    </label>
-                    <input
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-4 py-3 border border-pink-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all font-cute"
-                      placeholder="Enter your phone number..."
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 font-cute">
-                      Location
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.location}
-                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                      className="w-full px-4 py-3 border border-pink-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all font-cute"
-                      placeholder="Enter your location..."
-                    />
-                  </div>
-                  
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2 font-cute">
-                      Profile Picture URL
+                      Profile Picture
                     </label>
                     <input
-                      type="url"
-                      value={formData.profilePicture}
+                      type="file"
+                      accept="image/*"
                       onChange={handleImageChange}
                       className="w-full px-4 py-3 border border-pink-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all font-cute"
-                      placeholder="Enter profile picture URL..."
-                    />
-                  </div>
-                  
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2 font-cute">
-                      Bio
-                    </label>
-                    <textarea
-                      value={formData.bio}
-                      onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                      rows={3}
-                      className="w-full px-4 py-3 border border-pink-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all font-cute resize-none"
-                      placeholder="Tell us about yourself..."
                     />
                   </div>
                 </div>
@@ -385,7 +311,7 @@ const UserProfile = () => {
                 </div>
                 
                 <div className="bg-gradient-to-br from-indigo-400 to-blue-400 rounded-2xl p-6 text-white shadow-lg transform hover:scale-105 transition-transform">
-                  <Clock className="w-8 h-8 mb-3" />
+                  <Circle className="w-8 h-8 mb-3" />
                   <h4 className="text-lg font-semibold font-cute">In Progress</h4>
                   <p className="text-3xl font-bold font-cute">{taskStats.inProgress}</p>
                 </div>

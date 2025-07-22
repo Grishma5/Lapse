@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { Menu, X, User } from 'lucide-react';
@@ -8,8 +8,10 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -27,21 +29,32 @@ const Navbar = () => {
     }
   }, []);
 
-useEffect(() => {
-  // Only handle hash navigation on the home page
-  if (location.pathname === '/' && location.hash) {
-    const element = document.querySelector(location.hash);
-    if (element) {
-      setTimeout(() => {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+  useEffect(() => {
+    // Only handle hash navigation on the home page
+    if (location.pathname === '/' && location.hash) {
+      const element = document.querySelector(location.hash);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
     }
-  }
-  // For other pages, scroll to top
-  else if (location.pathname !== '/') {
-    window.scrollTo(0, 0);
-  }
-}, [location]);
+    // For other pages, scroll to top
+    else if (location.pathname !== '/') {
+      window.scrollTo(0, 0);
+    }
+  }, [location]);
+
+  useEffect(() => {
+    // Close dropdown when clicking outside
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -50,6 +63,7 @@ useEffect(() => {
     toast.success('Logged out successfully');
     navigate('/');
     setIsMenuOpen(false);
+    setIsDropdownOpen(false);
   };
 
   const handleHashNavigation = (hash) => {
@@ -135,12 +149,31 @@ useEffect(() => {
               </NavLink>
             )}
             {isLoggedIn ? (
-              <button 
-                onClick={handleLogout}
-                className="w-10 h-10 bg-gradient-to-br from-[#FFA5D6] to-[#A7ABDE] rounded-full flex items-center justify-center text-[#F0F0F5] hover:from-[#FFD6EE] hover:to-[#CED1F8] transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
-              >
-                <User className="w-5 h-5" />
-              </button>
+              <div className="relative" ref={dropdownRef}>
+                <button 
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="w-10 h-10 bg-gradient-to-br from-[#FFA5D6] to-[#A7ABDE] rounded-full flex items-center justify-center text-[#F0F0F5] hover:from-[#FFD6EE] hover:to-[#CED1F8] transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  <User className="w-5 h-5" />
+                </button>
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-[#ECD2E0]/50 z-50">
+                    <NavLink 
+                      to="/profile"
+                      className="block px-4 py-2 text-[#A7ABDE] hover:text-[#FFA5D6] hover:bg-[#FFD6EE]/10 transition-colors"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Profile
+                    </NavLink>
+                    <button 
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-[#A7ABDE] hover:text-[#FFA5D6] hover:bg-[#FFD6EE]/10 transition-colors"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
               <NavLink 
                 to="/register"
@@ -221,12 +254,21 @@ useEffect(() => {
               </NavLink>
             )}
             {isLoggedIn ? (
-              <button 
-                onClick={handleLogout}
-                className="w-full bg-gradient-to-r from-[#FFA5D6] to-[#A7ABDE] text-[#F0F0F5] px-6 py-2 rounded-lg"
-              >
-                Sign Out
-              </button>
+              <>
+                <NavLink 
+                  to="/#profile"
+                  className="block w-full text-left text-[#A7ABDE] hover:text-[#FFA5D6]"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Profile
+                </NavLink>
+                <button 
+                  onClick={handleLogout}
+                  className="block w-full text-left text-[#A7ABDE] hover:text-[#FFA5D6]"
+                >
+                  Logout
+                </button>
+              </>
             ) : (
               <NavLink 
                 to="/register"

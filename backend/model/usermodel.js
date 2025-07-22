@@ -23,7 +23,7 @@ const User = sequelize.define(
             },
         },
 
-        image:{
+        profilePicture:{
         type:DataTypes.STRING,
         allowNull:true,
         },

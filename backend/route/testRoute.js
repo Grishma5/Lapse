@@ -1,14 +1,16 @@
 const router = require('express').Router();
-const { createUsers, updateUsers, deleteUsers, getAllUsers, getUsers, loginUser } = require('../controller/testController');
+const { createUsers, updateUsers, deleteUsers, getAllUsers, getUsers, loginUser, getUserProfile, updateUserProfile } = require('../controller/testController');
 const fileUpload = require('../middleware/multer');
 const authGuard = require('../middleware/authguard');
 const isAdmin = require('../middleware/isAdmin');
 
-router.post("/createUsers", fileUpload("image"), createUsers);
-router.post("/loginUser", loginUser);
-router.put("/updateUsers/:id", authGuard, updateUsers);
-router.delete("/deleteUsers/:id", authGuard, deleteUsers);
-router.get("/getAllUsers", authGuard, isAdmin, getAllUsers);
-router.get("/getUsers/:id", authGuard, getUsers);
+router.post('/createUsers', fileUpload('image'), createUsers);
+router.post('/loginUser', loginUser);
+router.put('/updateUsers/:id', authGuard, updateUsers);
+router.delete('/deleteUsers/:id', authGuard, deleteUsers);
+router.get('/getAllUsers', authGuard, isAdmin, getAllUsers);
+router.get('/getUsers/:id', authGuard, getUsers);
+router.get('/users/profile', authGuard, getUserProfile); // Added profile GET endpoint
+router.put('/users/profile', authGuard, updateUserProfile); // Added profile PUT endpoint
 
 module.exports = router;

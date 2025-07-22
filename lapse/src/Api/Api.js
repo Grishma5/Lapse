@@ -70,5 +70,5 @@ export const createTaskApi = (data) => Api.post("/api/tasks", data);
 export const updateTaskApi = (id, data) => Api.put(`/api/tasks/${id}`, data);
 export const deleteTaskApi = (id) => Api.delete(`/api/tasks/${id}`);
 export const getTasksApi = () => Api.get("/api/tasks");
-export const getUserProfileApi = () => Api.get("/api/users/profile");
-export const updateUserProfileApi = (data) => Api.put("/api/users/profile", data);
+export const getUserProfileApi = () => Api.get("/api/test/users/profile"); // Updated path
+export const updateUserProfileApi = (data) => Api.put("/api/test/users/profile", data); // Updated path

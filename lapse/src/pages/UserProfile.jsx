@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { 
-  User, Save, X, Edit3, CheckCircle, Circle, Camera, 
-  Calendar, Trophy, Target, TrendingUp, Activity,
-  Mail, Award
+  User, Save, Edit3, CheckCircle, Circle, Camera, 
+  Calendar, Trophy, Target, Activity, Mail, Award,
+  Settings, Bell, Shield, Globe, HelpCircle
 } from 'lucide-react';
 import { getUserProfileApi, updateUserProfileApi, getTasksApi } from '../Api/Api';
 
 const UserProfile = () => {
   const [user, setUser] = useState({ 
-    name: '', 
+    username: '', 
     email: '', 
-    profilePicture: '',
+    image: '',
     joinedDate: ''
   });
   const [tasks, setTasks] = useState([]);
@@ -20,10 +20,11 @@ const UserProfile = () => {
   const [formData, setFormData] = useState({ 
     name: '', 
     email: '', 
-    profilePicture: null
+    image: null
   });
   const [greeting, setGreeting] = useState('');
   const [imagePreview, setImagePreview] = useState('');
+  const [activeSection, setActiveSection] = useState('account');
   const navigate = useNavigate();
 
   const taskStats = {
@@ -38,7 +39,7 @@ const UserProfile = () => {
 
   useEffect(() => {
     const hour = new Date().getHours();
-    const userName = user.name || 'there';
+    const userName = user.username || 'there';
     if (hour < 12) {
       setGreeting(`Good Morning, ${userName}! ☀️`);
     } else if (hour < 18) {
@@ -54,29 +55,31 @@ const UserProfile = () => {
       fetchUserProfile();
       fetchTasks();
     }
-  }, [navigate, user.name]);
+  }, [navigate, user.username]);
 
   const fetchUserProfile = async () => {
     try {
       const response = await getUserProfileApi();
+      console.log('Profile API Response:', response);
       const data = response.data;
-      if (data?.success || data?.data?.success) {
-        const userData = data.user || data.data.user;
+      if (data?.data?.success) {
+        const userData = data.data.user;
         const userInfo = {
-          name: userData.name || userData.username || '',
+          id: userData.id,
+          username: userData.username || '',
           email: userData.email || '',
-          profilePicture: userData.profilePicture || '',
-          joinedDate: userData.createdAt || userData.joinedDate || new Date().toISOString()
+          image: userData.image || '',
+          joinedDate: userData.createdAt || new Date().toISOString(),
         };
         setUser(userInfo);
         setFormData({
-          name: userInfo.name,
+          name: userInfo.username,
           email: userInfo.email,
-          profilePicture: null
+          image: null,
         });
-        setImagePreview(userInfo.profilePicture ? `${import.meta.env.VITE_API_BASE_URL}/uploads/${userInfo.profilePicture}` : '');
+        setImagePreview(userInfo.image ? `${import.meta.env.VITE_API_BASE_URL}/${userInfo.image}` : '');
       } else {
-        toast.error(data?.message || 'Failed to fetch profile');
+        toast.error(data?.data?.message || 'Failed to fetch profile');
       }
     } catch (error) {
       console.error('Fetch profile error:', error.response ? error.response.data : error.message);
@@ -87,8 +90,8 @@ const UserProfile = () => {
   const fetchTasks = async () => {
     try {
       const response = await getTasksApi();
-      if (response?.data?.success || response?.success) {
-        setTasks(response.data.tasks || response.tasks || []);
+      if (response?.data?.success) {
+        setTasks(response.data.tasks || []);
       } else {
         toast.error(response?.data?.message || 'Failed to fetch tasks');
       }
@@ -101,47 +104,77 @@ const UserProfile = () => {
   const handleEditToggle = () => {
     if (!isEditing) {
       setFormData({ 
-        name: user.name, 
+        name: user.username, 
         email: user.email, 
-        profilePicture: null
+        image: null
       });
-      setImagePreview(user.profilePicture ? `${import.meta.env.VITE_API_BASE_URL}/uploads/${user.profilePicture}` : '');
+      setImagePreview(user.image ? `https://localhost:5555/${user.image}` : '');
     } else {
-      setImagePreview(user.profilePicture ? `${import.meta.env.VITE_API_BASE_URL}/uploads/${user.profilePicture}` : '');
+      setImagePreview(user.image ? `${import.meta.env.VITE_API_BASE_URL}/${user.image}` : '');
     }
     setIsEditing(!isEditing);
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    console.log('Selected file:', file);
     if (file) {
-      setFormData({ ...formData, profilePicture: file });
-      setImagePreview(URL.createObjectURL(file)); // Preview the uploaded file
+      setFormData({ ...formData, image: file });
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
   const handleSubmit = async () => {
-    if (!formData.name.trim() || !formData.email.trim()) {
-      toast.error('Name and email are required');
+    if (!formData.name.trim() && !formData.email.trim() && !formData.image) {
+      toast.error('At least one field (name, email, or image) is required');
       return;
     }
-    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
       toast.error('Please enter a valid email address');
       return;
     }
+
+    const formDataToSend = new FormData();
+    if (formData.name.trim() && formData.name.trim() !== user.username) {
+      formDataToSend.append('username', formData.name.trim());
+    }
+    if (formData.email.trim() && formData.email.trim() !== user.email) {
+      formDataToSend.append('email', formData.email.trim());
+    }
+    if (formData.image) {
+      formDataToSend.append('image', formData.image, formData.image.name);
+    }
+
+    console.log('FormData contents:');
+    for (let [key, value] of formDataToSend.entries()) {
+      console.log(`${key}:`, value instanceof File ? value.name : value);
+    }
+
     try {
-      const response = await updateUserProfileApi(formData);
-      if (response?.data?.success) {
-        const updatedUser = { ...user, ...formData, profilePicture: response.data.user.profilePicture };
+      const response = await updateUserProfileApi(user.id, formDataToSend);
+      console.log('Update Profile API Response:', response);
+      console.log('Response Status:', response.status);
+      console.log('Response Data:', response.data);
+
+      if (response.status === 200 && response.data?.data?.success) {
+        const updatedUser = {
+          ...user,
+          username: response.data.data.user.username || user.username,
+          email: response.data.data.user.email || user.email,
+          image: response.data.data.user.image || user.image,
+        };
         setUser(updatedUser);
         setIsEditing(false);
+        setImagePreview(
+          updatedUser.image ? `${import.meta.env.VITE_API_BASE_URL}/${updatedUser.image}` : ''
+        );
         toast.success('Profile updated successfully! 🎉');
       } else {
-        toast.error(response?.data?.message || 'Failed to update profile');
+        toast.error(response.data?.data?.message || 'Failed to update profile');
       }
     } catch (error) {
       console.error('Update profile error:', error.response ? error.response.data : error.message);
-      toast.error(error.response?.data?.message || 'Error updating profile');
+      toast.error(error.response?.data?.data?.message || 'Error updating profile');
     }
   };
 
@@ -153,232 +186,301 @@ const UserProfile = () => {
     });
   };
 
+  const menuItems = [
+    { id: 'account', label: 'Account', icon: User },
+    { id: 'notifications', label: 'Notifications', icon: Bell },
+    { id: 'privacy', label: 'Privacy', icon: Shield },
+    { id: 'languages', label: 'Languages', icon: Globe },
+    { id: 'help', label: 'Help', icon: HelpCircle },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 p-6 mt-14">
       <div className="max-w-6xl mx-auto">
-        {/* Header Section */}
+        {/* Header */}
         <div className="mb-8">
-          <h2 className="text-3xl font-semibold text-gray-800 mb-2 font-cute">{greeting}</h2>
-          <p className="text-gray-600 font-cute text-lg">Welcome back to your personal dashboard</p>
+          <h2 className="text-3xl font-semibold text-gray-800 mb-2">{greeting}</h2>
+          <p className="text-gray-600">Manage your account settings and preferences</p>
         </div>
 
-        {/* Profile Card */}
-        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl border border-pink-100 overflow-hidden mb-8">
-          {/* Cover Section */}
-          <div className="h-32 bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 relative">
-            <div className="absolute -bottom-16 left-8">
-              <div className="relative">
-                {imagePreview ? (
-                  <img
-                    src={imagePreview}
-                    alt="Profile"
-                    className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
-                  />
-                ) : (
-                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-pink-300 to-purple-300 flex items-center justify-center border-4 border-white shadow-lg">
-                    <User className="w-16 h-16 text-white" />
-                  </div>
-                )}
-                {isEditing && (
-                  <div className="absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-lg">
-                    <Camera className="w-4 h-4 text-gray-600" />
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Profile Info Section */}
-          <div className="pt-20 pb-8 px-8">
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-800 mb-2 font-cute">
-                  Hi, {user.name || 'User'}! 👋
-                </h1>
-                <div className="flex items-center space-x-4 text-gray-600 mb-4">
-                  {user.email && (
-                    <div className="flex items-center space-x-2">
-                      <Mail className="w-4 h-4" />
-                      <span className="font-cute">{user.email}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              <div className="flex space-x-3">
-                <div className="text-center bg-gradient-to-br from-pink-100 to-purple-100 rounded-2xl p-4">
-                  <Trophy className="w-8 h-8 text-purple-500 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600 font-cute">Level</p>
-                  <p className="font-bold text-purple-600 font-cute">{achievementLevel}</p>
-                </div>
-                
-                <button
-                  onClick={handleEditToggle}
-                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-2xl hover:from-pink-600 hover:to-purple-600 transition-all duration-300 shadow-lg hover:shadow-xl font-cute transform hover:scale-105"
-                >
-                  <Edit3 className="w-5 h-5 mr-2" />
-                  {isEditing ? 'Cancel Edit' : 'Edit Profile'}
-                </button>
-              </div>
+        <div className="flex gap-8">
+          {/* Sidebar */}
+          <div className="w-64 flex-shrink-0">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-6">Settings</h3>
+              <nav className="space-y-2">
+                {menuItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setActiveSection(item.id)}
+                      className={`w-full flex items-center px-4 py-3 text-left rounded-xl transition-colors ${
+                        activeSection === item.id
+                          ? 'bg-pink-100 text-pink-600 border-l-4 border-pink-500'
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      <Icon className="w-5 h-5 mr-3" />
+                      {item.label}
+                    </button>
+                  );
+                })}
+              </nav>
             </div>
 
-            {/* Edit Form */}
-            {isEditing && (
-              <div className="border-t border-pink-100 pt-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 font-cute">
-                      Name *
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-4 py-3 border border-pink-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all font-cute"
-                      placeholder="Enter your name..."
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 font-cute">
-                      Email *
-                    </label>
-                    <input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-4 py-3 border border-pink-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all font-cute"
-                      placeholder="Enter your email..."
-                      required
-                    />
-                  </div>
-                  
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2 font-cute">
-                      Profile Picture
-                    </label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="w-full px-4 py-3 border border-pink-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all font-cute"
-                    />
-                  </div>
-                </div>
-                
-                <div className="flex justify-end space-x-3 mt-6">
-                  <button
-                    onClick={handleEditToggle}
-                    className="px-6 py-3 text-gray-600 hover:text-purple-400 transition-colors font-cute rounded-xl hover:bg-gray-50"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleSubmit}
-                    className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl hover:from-pink-600 hover:to-purple-600 transition-all duration-300 shadow-lg font-cute transform hover:scale-105"
-                  >
-                    <Save className="w-5 h-5 mr-2" />
-                    Save Changes
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Stats Dashboard */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Task Statistics */}
-          <div className="lg:col-span-2">
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl border border-pink-100 p-8">
-              <h3 className="text-2xl font-bold text-gray-800 mb-6 font-cute flex items-center">
-                <Activity className="w-6 h-6 mr-3 text-purple-500" />
-                Task Analytics
-              </h3>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-gradient-to-br from-pink-400 to-rose-400 rounded-2xl p-6 text-white shadow-lg transform hover:scale-105 transition-transform">
-                  <Target className="w-8 h-8 mb-3" />
-                  <h4 className="text-lg font-semibold font-cute">Total</h4>
-                  <p className="text-3xl font-bold font-cute">{taskStats.total}</p>
-                </div>
-                
-                <div className="bg-gradient-to-br from-purple-400 to-violet-400 rounded-2xl p-6 text-white shadow-lg transform hover:scale-105 transition-transform">
-                  <Circle className="w-8 h-8 mb-3" />
-                  <h4 className="text-lg font-semibold font-cute">To Do</h4>
-                  <p className="text-3xl font-bold font-cute">{taskStats.todo}</p>
-                </div>
-                
-                <div className="bg-gradient-to-br from-indigo-400 to-blue-400 rounded-2xl p-6 text-white shadow-lg transform hover:scale-105 transition-transform">
-                  <Circle className="w-8 h-8 mb-3" />
-                  <h4 className="text-lg font-semibold font-cute">In Progress</h4>
-                  <p className="text-3xl font-bold font-cute">{taskStats.inProgress}</p>
-                </div>
-                
-                <div className="bg-gradient-to-br from-emerald-400 to-teal-400 rounded-2xl p-6 text-white shadow-lg transform hover:scale-105 transition-transform">
-                  <CheckCircle className="w-8 h-8 mb-3" />
-                  <h4 className="text-lg font-semibold font-cute">Done</h4>
-                  <p className="text-3xl font-bold font-cute">{taskStats.done}</p>
-                </div>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="bg-gray-100 rounded-full h-4 mb-4">
-                <div 
-                  className="bg-gradient-to-r from-pink-400 to-purple-400 h-4 rounded-full transition-all duration-500"
-                  style={{ width: `${taskStats.completionRate}%` }}
-                ></div>
-              </div>
-              <p className="text-center text-gray-600 font-cute">
-                <span className="font-bold text-purple-600">{taskStats.completionRate}%</span> completion rate
-              </p>
-            </div>
-          </div>
-
-          {/* Profile Summary */}
-          <div className="space-y-8">
-            {/* Achievement Card */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl border border-pink-100 p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4 font-cute flex items-center">
-                <Award className="w-5 h-5 mr-2 text-yellow-500" />
+            {/* Stats Card */}
+            <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h4 className="font-semibold text-gray-800 mb-4 flex items-center">
+                <Trophy className="w-5 h-5 mr-2 text-yellow-500" />
                 Achievement
-              </h3>
+              </h4>
               <div className="text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Trophy className="w-10 h-10 text-white" />
+                <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Trophy className="w-8 h-8 text-white" />
                 </div>
-                <h4 className="text-2xl font-bold text-gray-800 font-cute">{achievementLevel}</h4>
-                <p className="text-gray-600 font-cute">{taskStats.done} tasks completed</p>
+                <h5 className="text-xl font-bold text-gray-800">{achievementLevel}</h5>
+                <p className="text-gray-600 text-sm">{taskStats.done} tasks completed</p>
               </div>
             </div>
+          </div>
 
-            {/* Join Date */}
-            {user.joinedDate && (
-              <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl border border-pink-100 p-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-4 font-cute flex items-center">
-                  <Calendar className="w-5 h-5 mr-2 text-indigo-500" />
-                  Member Since
-                </h3>
-                <p className="text-gray-600 font-cute text-lg">
-                  {formatDate(user.joinedDate)}
-                </p>
+          {/* Main Content */}
+          <div className="flex-1">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+              {/* Header */}
+              <div className="border-b border-gray-100 p-6">
+                <h2 className="text-2xl font-semibold text-gray-800">Account Settings</h2>
               </div>
-            )}
+
+              {/* Account Section */}
+              {activeSection === 'account' && (
+                <div className="p-6">
+                  {/* Basic Info */}
+                  <div className="mb-8">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-6">Basic info</h3>
+                    
+                    {/* Profile Picture */}
+                    <div className="flex items-center justify-between py-4 border-b border-gray-100">
+                      <div className="flex items-center space-x-4">
+                        <span className="text-sm font-medium text-gray-600 w-24">Profile Picture</span>
+                        <div className="relative">
+                          {imagePreview ? (
+                            <img
+                              src={imagePreview}
+                              alt="Profile"
+                              className="w-12 h-12 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-300 to-purple-300 flex items-center justify-center">
+                              <User className="w-6 h-6 text-white" />
+                            </div>
+                          )}
+                          {isEditing && (
+                            <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1 shadow-sm border">
+                              <label htmlFor="image-upload-main">
+                                <Camera className="w-3 h-3 text-gray-600 cursor-pointer" />
+                              </label>
+                              <input
+                                id="image-upload-main"
+                                type="file"
+                                accept="image/*"
+                                name="image"
+                                onChange={handleImageChange}
+                                className="hidden"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        {isEditing && (
+                          <>
+                            <label htmlFor="image-upload-button" className="text-sm text-pink-600 hover:text-pink-700 cursor-pointer">
+                              Upload new picture
+                            </label>
+                            <input
+                              id="image-upload-button"
+                              type="file"
+                              accept="image/*"
+                              name="image"
+                              onChange={handleImageChange}
+                              className="hidden"
+                            />
+                            <button className="text-sm text-gray-500 hover:text-gray-600">
+                              Remove
+                            </button>
+                          </>
+                        )}
+                        {!isEditing && (
+                          <button
+                            onClick={handleEditToggle}
+                            className="text-gray-400 hover:text-gray-600"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Name */}
+                    <div className="flex items-center justify-between py-4 border-b border-gray-100">
+                      <span className="text-sm font-medium text-gray-600 w-24">Name</span>
+                      <div className="flex-1 mx-4">
+                        {isEditing ? (
+                          <input
+                            type="text"
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-transparent"
+                          />
+                        ) : (
+                          <span className="text-gray-800">{user.username || 'Not set'}</span>
+                        )}
+                      </div>
+                      <div className="w-8">
+                        {!isEditing && (
+                          <button
+                            onClick={handleEditToggle}
+                            className="text-gray-400 hover:text-gray-600"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Email */}
+                    <div className="flex items-center justify-between py-4 border-b border-gray-100">
+                      <span className="text-sm font-medium text-gray-600 w-24">Email</span>
+                      <div className="flex-1 mx-4">
+                        {isEditing ? (
+                          <input
+                            type="email"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-transparent"
+                          />
+                        ) : (
+                          <span className="text-gray-800">{user.email || 'Not set'}</span>
+                        )}
+                      </div>
+                      <div className="w-8">
+                        {!isEditing && (
+                          <button
+                            onClick={handleEditToggle}
+                            className="text-gray-400 hover:text-gray-600"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Member Since */}
+                    {user.joinedDate && (
+                      <div className="flex items-center justify-between py-4">
+                        <span className="text-sm font-medium text-gray-600 w-24">Member Since</span>
+                        <div className="flex-1 mx-4">
+                          <span className="text-gray-800">{formatDate(user.joinedDate)}</span>
+                        </div>
+                        <div className="w-8"></div>
+                      </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    {isEditing && (
+                      <div className="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-100">
+                        <button
+                          onClick={handleEditToggle}
+                          className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleSubmit}
+                          className="px-6 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg hover:from-pink-600 hover:to-purple-600 transition-all duration-300 shadow-sm"
+                        >
+                          Save Changes
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Task Analytics */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-6">Task Analytics</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="bg-gradient-to-br from-pink-400 to-rose-400 rounded-xl p-4 text-white">
+                        <Target className="w-6 h-6 mb-2" />
+                        <h4 className="font-semibold">Total</h4>
+                        <p className="text-2xl font-bold">{taskStats.total}</p>
+                      </div>
+                      
+                      <div className="bg-gradient-to-br from-purple-400 to-violet-400 rounded-xl p-4 text-white">
+                        <Circle className="w-6 h-6 mb-2" />
+                        <h4 className="font-semibold">To Do</h4>
+                        <p className="text-2xl font-bold">{taskStats.todo}</p>
+                      </div>
+                      
+                      <div className="bg-gradient-to-br from-indigo-400 to-blue-400 rounded-xl p-4 text-white">
+                        <Activity className="w-6 h-6 mb-2" />
+                        <h4 className="font-semibold">In Progress</h4>
+                        <p className="text-2xl font-bold">{taskStats.inProgress}</p>
+                      </div>
+                      
+                      <div className="bg-gradient-to-br from-emerald-400 to-teal-400 rounded-xl p-4 text-white">
+                        <CheckCircle className="w-6 h-6 mb-2" />
+                        <h4 className="font-semibold">Done</h4>
+                        <p className="text-2xl font-bold">{taskStats.done}</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-6">
+                      <div className="bg-gray-200 rounded-full h-2 mb-2">
+                        <div 
+                          className="bg-gradient-to-r from-pink-400 to-purple-400 h-2 rounded-full transition-all duration-500"
+                          style={{ width: `${taskStats.completionRate}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-semibold text-purple-600">{taskStats.completionRate}%</span> completion rate
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Other Sections Placeholder */}
+              {activeSection !== 'account' && (
+                <div className="p-6">
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Settings className="w-8 h-8 text-gray-400" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                      {menuItems.find(item => item.id === activeSection)?.label} Settings
+                    </h3>
+                    <p className="text-gray-600">This section is coming soon!</p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Empty State */}
-        {tasks.length === 0 && (
-          <div className="text-center py-16 mt-8">
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl border border-pink-100 p-12">
-              <Circle className="w-16 h-16 text-gray-300 mx-auto mb-6" />
-              <h3 className="text-2xl font-bold text-gray-400 mb-2 font-cute">No tasks yet</h3>
-              <p className="text-gray-400 font-cute">Start your productivity journey by creating your first task!</p>
-              <button className="mt-4 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-2xl hover:from-pink-600 hover:to-purple-600 transition-all duration-300 shadow-lg font-cute transform hover:scale-105">
-                Create Your First Task
-              </button>
-            </div>
+          {/* No Tasks Message */}
+        {tasks.length === 0 && activeSection === 'account' && (
+          <div className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+            <Circle className="w-16 h-16 text-gray-300 mx-auto mb-6" />
+            <h3 className="text-xl font-semibold text-gray-400 mb-2">No tasks yet</h3>
+            <p className="text-gray-400 mb-4">Start your productivity journey by creating your first task!</p>
+            <button 
+              onClick={() => navigate('/tasks')}
+              className="px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg hover:from-pink-600 hover:to-purple-600 transition-all duration-300 shadow-sm"
+            >
+              Create Your First Task
+            </button>
           </div>
         )}
       </div>

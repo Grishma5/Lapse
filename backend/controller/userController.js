@@ -1,4 +1,4 @@
-/*const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const User = require("../models/usermodel"); // Import the User model
 
 // Load environment variables
@@ -59,9 +59,11 @@ const changepassword = async (req, res) => {
     }
 };
 
+
 module.exports = {
     createUsers,
     LoginUsers,
     Viewprofile,
-    changepassword
-};*/
+    changepassword,
+    
+};

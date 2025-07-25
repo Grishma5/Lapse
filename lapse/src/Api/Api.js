@@ -63,6 +63,13 @@ LoginUser.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+export const updateUserProfileApi = (userId, data) => {
+  const isFormData = data instanceof FormData;
+  const apiInstance = isFormData ? ApiFormData : Api;
+  return apiInstance.put(`/api/test/updateUsers/${userId}`, data);
+};
+
+
 // Export API functions
 export const createUserApi = (data) => ApiFormData.post("/api/test/createUsers", data);
 export const loginUserApi = (data) => LoginUser.post("/api/test/loginUser", data);
@@ -70,5 +77,4 @@ export const createTaskApi = (data) => Api.post("/api/tasks", data);
 export const updateTaskApi = (id, data) => Api.put(`/api/tasks/${id}`, data);
 export const deleteTaskApi = (id) => Api.delete(`/api/tasks/${id}`);
 export const getTasksApi = () => Api.get("/api/tasks");
-export const getUserProfileApi = () => Api.get("/api/test/users/profile"); // Updated path
-export const updateUserProfileApi = (data) => Api.put("/api/test/users/profile", data); // Updated path
+export const getUserProfileApi = () => Api.get("/api/test/users/profile");

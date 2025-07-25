@@ -1,39 +1,50 @@
-const multer = require("multer");
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        return cb(null, "./uploads");
-    },
-    filename: (req, file, cb) =>
-    {
-        const fileName = file?.originalname?.replace(/\s/g, "_"); //? kei na kei auxa hai determine garxa
-        cb(null, fileName);
-    },
-});
-
-var fileFilter = (req, file, callback) => {
-    if(!file.originalname.match(/\.(pdf|jpg|JPEG|png)$/)){
-        return callback(new Error("Invalid file format"), false)
-    }
-    callback(null,true)
+const multer = require('multer');
+const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
+const path = require('path');
+console.log("multer.js has been loaded");
+// Ensure Uploads directory exists
+const uploadDir = path.join(__dirname, 'Uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-const fileUpload = (fieldName) => (req, res, next) => {
-    multer({
-        storage,
-        fileFilter: fileFilter,
-    }).array(fieldName, 100)(req, res, (err) => // single upload garna .single(fieldName)
-    {
-        if(err) {
-            return res.status(400).json({error: err.message});
-        }
-        if (req.files){
-            console.log("Uploaded files:");
-            req.files.forEach(file =>{
-                console.log(`- ${file.originalname} -> ${file.filename}`);
-            });
-        }
-        next();
-    });
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './Uploads');
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = uuidv4();
+    const fileExtension = file.originalname.split('.').pop();
+    const fileName = `${uniqueSuffix}.${fileExtension}`;
+    cb(null, fileName);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (!file.originalname.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+    return cb(new Error('Invalid file format. Only JPG, JPEG, PNG, GIF, and WEBP are allowed.'), false);
+  }
+  cb(null, true);
 };
 
-module.exports = fileUpload
+const fileUpload = (fieldName) => (req, res, next) => {
+  console.log(`fileUpload middleware activated for field: ${fieldName}`);
+  multer({
+    storage,
+    fileFilter,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  }).single(fieldName)(req, res, (err) => {
+    if (err) {
+      console.error('Multer error:', err.message);
+      return res.status(400).json({ data: { success: false, message: err.message } });
+    }
+    console.log('Uploaded file:', req.file ? req.file.path : 'No file');
+    console.log('Multer - req.body:', req.body);  // <-- Add this
+console.log('Multer - req.file:', req.file);
+
+    next();
+  });
+};
+
+module.exports = fileUpload;

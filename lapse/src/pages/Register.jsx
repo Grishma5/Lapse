@@ -37,33 +37,29 @@ const Register = () => {
       }
 
       const response = await createUserApi(data);
-      console.log('API Response:', response);
+      console.log('API Response (Full):', response);
+      console.log('API Response Status:', response.status);
+      console.log('API Response Data:', response.data);
 
-      // Check for success using HTTP status or response data
-      if (
-        response.status === 200 ||
-        response.status === 201 ||
-        response?.data?.success ||
-        response?.data?.status === 'success'
-      ) {
+      if (response.status === 201 && response.data?.data?.success) {
         setIsLoading(false);
         toast.success('Registration successful! Welcome to Lapse!');
         setTimeout(() => navigate('/login'), 1000);
       } else {
         setIsLoading(false);
-        toast.error(response?.data?.message || 'Registration failed');
+        toast.error(response.data?.data?.message || 'Registration failed');
       }
     } catch (err) {
       setIsLoading(false);
-      console.error('Registration error:', err.response || err);
-      const errorMessage = err?.response?.data?.message || 'An error occurred during registration';
+      console.error('Registration error:', err.response?.data || err.message);
+      const errorMessage = err.response?.data?.data?.message || err.message || 'An error occurred during registration';
       toast.error(errorMessage);
     }
   };
 
+  // Rest of the component remains unchanged
   return (
     <div className="min-h-screen bg-gradient-to-b flex items-center justify-center p-4 pt-20">
-      {/* Navigation */}
       <div className="fixed top-6 left-6 z-10">
         <button
           onClick={() => navigate('/')}
@@ -74,31 +70,26 @@ const Register = () => {
       </div>
 
       <div className="w-full max-w-md">
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center px-4 py-2 bg-purple-100 rounded-full text-purple-500 text-sm font-medium mb-6">
             <CheckCircle className="w-4 h-4 mr-2" />
             Join Lapse Today
           </div>
-
           <h1 className="text-4xl font-bold text-pink-400 mb-3">
             Create Your
             <span className="block bg-gradient-to-r to-purple-500 bg-clip-text text-transparent">
               Account
             </span>
           </h1>
-
-          <p className="text-black-400 text-lg">
+          <p className="text-gray-600 text-lg">
             Start organizing your life with Lapse
           </p>
         </div>
 
-        {/* Registration Form */}
         <div className="bg-white rounded-2xl shadow-xl p-8 backdrop-blur-sm border border-white/20">
           <form onSubmit={submit} className="space-y-6">
-            {/* Name Input */}
             <div className="relative">
-              <label className="block text-sm font-medium text-black-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Full Name
               </label>
               <div className="relative">
@@ -114,9 +105,8 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Email Input */}
             <div className="relative">
-              <label className="block text-sm font-medium text-black-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Email Address
               </label>
               <div className="relative">
@@ -132,9 +122,8 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Password Input */}
             <div className="relative">
-              <label className="block text-sm font-medium text-black-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Password
               </label>
               <div className="relative">
@@ -157,9 +146,8 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Image Upload */}
             <div>
-              <label className="block text-sm font-medium text-black-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Profile Image (Optional)
               </label>
               <input
@@ -170,7 +158,6 @@ const Register = () => {
               />
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading || !name || !email || !password}
@@ -187,13 +174,12 @@ const Register = () => {
             </button>
           </form>
 
-          {/* Login Link */}
           <div className="mt-6 text-center">
-            <p className="text-black-700">
+            <p className="text-gray-700">
               Already have an account?{' '}
               <button
                 onClick={() => navigate('/login')}
-                className="text-purple-300 hover:text-purple-300 font-semibold hover:underline transition-colors"
+                className="text-purple-300 hover:text-purple-400 font-semibold hover:underline transition-colors"
               >
                 Sign in here
               </button>
@@ -201,7 +187,6 @@ const Register = () => {
           </div>
         </div>
 
-        {/* Live Preview Section */}
         {(name || email || password) && (
           <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
             <h3 className="text-lg font-semibold text-pink-900 mb-4 flex items-center">

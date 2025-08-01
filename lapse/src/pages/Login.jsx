@@ -50,7 +50,7 @@ const Login = () => {
 
       setTimeout(() => {
         if (decode.role === 'admin') {
-          navigate('/dashboard');
+          navigate('/admin');
         } else {
           navigate('/tasks');
         }

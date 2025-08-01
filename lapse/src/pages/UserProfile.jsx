@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { getUserProfileApi, updateUserProfileApi, getTasksApi } from '../Api/Api';
 
-const UserProfile = () => {
+const UserProfile = ({ isDarkMode }) => {
   const [user, setUser] = useState({ 
     username: '', 
     email: '', 
@@ -195,19 +195,19 @@ const UserProfile = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 p-6 mt-14">
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-black text-gray-200' : 'bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 text-[#4B0082]'} p-6 mt-14`}>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h2 className="text-3xl font-semibold text-gray-800 mb-2">{greeting}</h2>
-          <p className="text-gray-600">Manage your account settings and preferences</p>
+          <h2 className={`text-3xl font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-800'} mb-2`}>{greeting}</h2>
+          <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>Manage your account settings and preferences</p>
         </div>
 
         <div className="flex gap-8">
           {/* Sidebar */}
           <div className="w-64 flex-shrink-0">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-6">Settings</h3>
+            <div className={`bg-${isDarkMode ? 'gray-800/80' : 'white'} rounded-2xl shadow-sm ${isDarkMode ? 'border-gray-700/50' : 'border border-gray-100'} p-6`}>
+              <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-800'} mb-6`}>Settings</h3>
               <nav className="space-y-2">
                 {menuItems.map((item) => {
                   const Icon = item.icon;
@@ -217,8 +217,12 @@ const UserProfile = () => {
                       onClick={() => setActiveSection(item.id)}
                       className={`w-full flex items-center px-4 py-3 text-left rounded-xl transition-colors ${
                         activeSection === item.id
-                          ? 'bg-pink-100 text-pink-600 border-l-4 border-pink-500'
-                          : 'text-gray-600 hover:bg-gray-50'
+                          ? isDarkMode
+                            ? 'bg-gray-700/50 text-gray-100 border-l-4 border-pink-500'
+                            : 'bg-pink-100 text-pink-600 border-l-4 border-pink-500'
+                          : isDarkMode
+                            ? 'text-gray-400 hover:bg-gray-700/50'
+                            : 'text-gray-600 hover:bg-gray-50'
                       }`}
                     >
                       <Icon className="w-5 h-5 mr-3" />
@@ -230,27 +234,27 @@ const UserProfile = () => {
             </div>
 
             {/* Stats Card */}
-            <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h4 className="font-semibold text-gray-800 mb-4 flex items-center">
+            <div className={`mt-6 ${isDarkMode ? 'bg-gray-800/80' : 'bg-white'} rounded-2xl shadow-sm ${isDarkMode ? 'border-gray-700/50' : 'border border-gray-100'} p-6`}>
+              <h4 className={`font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-800'} mb-4 flex items-center`}>
                 <Trophy className="w-5 h-5 mr-2 text-yellow-500" />
                 Achievement
               </h4>
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className={`w-16 h-16 ${isDarkMode ? 'bg-gray-700' : 'bg-gradient-to-br from-yellow-400 to-orange-400'} rounded-full flex items-center justify-center mx-auto mb-3`}>
                   <Trophy className="w-8 h-8 text-white" />
                 </div>
-                <h5 className="text-xl font-bold text-gray-800">{achievementLevel}</h5>
-                <p className="text-gray-600 text-sm">{taskStats.done} tasks completed</p>
+                <h5 className={`text-xl font-bold ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>{achievementLevel}</h5>
+                <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>{taskStats.done} tasks completed</p>
               </div>
             </div>
           </div>
 
           {/* Main Content */}
           <div className="flex-1">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+            <div className={`bg-${isDarkMode ? 'gray-800/80' : 'white'} rounded-2xl shadow-sm ${isDarkMode ? 'border-gray-700/50' : 'border border-gray-100'}`}>
               {/* Header */}
-              <div className="border-b border-gray-100 p-6">
-                <h2 className="text-2xl font-semibold text-gray-800">Account Settings</h2>
+              <div className={`border-b ${isDarkMode ? 'border-gray-700/50' : 'border-gray-100'} p-6`}>
+                <h2 className={`text-2xl font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Account Settings</h2>
               </div>
 
               {/* Account Section */}
@@ -258,12 +262,12 @@ const UserProfile = () => {
                 <div className="p-6">
                   {/* Basic Info */}
                   <div className="mb-8">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-6">Basic info</h3>
+                    <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-800'} mb-6`}>Basic info</h3>
                     
                     {/* Profile Picture */}
-                    <div className="flex items-center justify-between py-4 border-b border-gray-100">
+                    <div className={`flex items-center justify-between py-4 ${isDarkMode ? 'border-gray-700/50' : 'border-b border-gray-100'}`}>
                       <div className="flex items-center space-x-4">
-                        <span className="text-sm font-medium text-gray-600 w-24">Profile Picture</span>
+                        <span className={isDarkMode ? 'text-gray-400' : 'text-sm font-medium text-gray-600'} style={{ width: '96px' }}>Profile Picture</span>
                         <div className="relative">
                           {imagePreview ? (
                             <img
@@ -272,12 +276,12 @@ const UserProfile = () => {
                               className="w-12 h-12 rounded-full object-cover"
                             />
                           ) : (
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-300 to-purple-300 flex items-center justify-center">
+                            <div className={`w-12 h-12 ${isDarkMode ? 'bg-gray-700' : 'bg-gradient-to-br from-pink-300 to-purple-300'} flex items-center justify-center`}>
                               <User className="w-6 h-6 text-white" />
                             </div>
                           )}
                           {isEditing && (
-                            <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1 shadow-sm border">
+                            <div className={`absolute -bottom-1 -right-1 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-full p-1 shadow-sm border ${isDarkMode ? 'border-gray-600' : 'border'}`}>
                               <label htmlFor="image-upload-main">
                                 <Camera className="w-3 h-3 text-gray-600 cursor-pointer" />
                               </label>
@@ -296,7 +300,7 @@ const UserProfile = () => {
                       <div className="flex items-center space-x-3">
                         {isEditing && (
                           <>
-                            <label htmlFor="image-upload-button" className="text-sm text-pink-600 hover:text-pink-700 cursor-pointer">
+                            <label htmlFor="image-upload-button" className={isDarkMode ? 'text-gray-300 hover:text-gray-100' : 'text-sm text-pink-600 hover:text-pink-700 cursor-pointer'}>
                               Upload new picture
                             </label>
                             <input
@@ -307,7 +311,7 @@ const UserProfile = () => {
                               onChange={handleImageChange}
                               className="hidden"
                             />
-                            <button className="text-sm text-gray-500 hover:text-gray-600">
+                            <button className={isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-sm text-gray-500 hover:text-gray-600'}>
                               Remove
                             </button>
                           </>
@@ -315,7 +319,7 @@ const UserProfile = () => {
                         {!isEditing && (
                           <button
                             onClick={handleEditToggle}
-                            className="text-gray-400 hover:text-gray-600"
+                            className={isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}
                           >
                             <Edit3 className="w-4 h-4" />
                           </button>
@@ -324,25 +328,25 @@ const UserProfile = () => {
                     </div>
 
                     {/* Name */}
-                    <div className="flex items-center justify-between py-4 border-b border-gray-100">
-                      <span className="text-sm font-medium text-gray-600 w-24">Name</span>
+                    <div className={`flex items-center justify-between py-4 ${isDarkMode ? 'border-gray-700/50' : 'border-b border-gray-100'}`}>
+                      <span className={isDarkMode ? 'text-gray-400' : 'text-sm font-medium text-gray-600'} style={{ width: '96px' }}>Name</span>
                       <div className="flex-1 mx-4">
                         {isEditing ? (
                           <input
                             type="text"
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-transparent"
+                            className={`w-full px-3 py-2 border ${isDarkMode ? 'border-gray-700 bg-gray-800 text-gray-200' : 'border-gray-200'} rounded-lg focus:ring-2 focus:ring-${isDarkMode ? 'gray-600' : 'pink-400'} focus:border-transparent`}
                           />
                         ) : (
-                          <span className="text-gray-800">{user.username || 'Not set'}</span>
+                          <span className={isDarkMode ? 'text-gray-300' : 'text-gray-800'}>{user.username || 'Not set'}</span>
                         )}
                       </div>
                       <div className="w-8">
                         {!isEditing && (
                           <button
                             onClick={handleEditToggle}
-                            className="text-gray-400 hover:text-gray-600"
+                            className={isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}
                           >
                             <Edit3 className="w-4 h-4" />
                           </button>
@@ -351,25 +355,25 @@ const UserProfile = () => {
                     </div>
 
                     {/* Email */}
-                    <div className="flex items-center justify-between py-4 border-b border-gray-100">
-                      <span className="text-sm font-medium text-gray-600 w-24">Email</span>
+                    <div className={`flex items-center justify-between py-4 ${isDarkMode ? 'border-gray-700/50' : 'border-b border-gray-100'}`}>
+                      <span className={isDarkMode ? 'text-gray-400' : 'text-sm font-medium text-gray-600'} style={{ width: '96px' }}>Email</span>
                       <div className="flex-1 mx-4">
                         {isEditing ? (
                           <input
                             type="email"
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-transparent"
+                            className={`w-full px-3 py-2 border ${isDarkMode ? 'border-gray-700 bg-gray-800 text-gray-200' : 'border-gray-200'} rounded-lg focus:ring-2 focus:ring-${isDarkMode ? 'gray-600' : 'pink-400'} focus:border-transparent`}
                           />
                         ) : (
-                          <span className="text-gray-800">{user.email || 'Not set'}</span>
+                          <span className={isDarkMode ? 'text-gray-300' : 'text-gray-800'}>{user.email || 'Not set'}</span>
                         )}
                       </div>
                       <div className="w-8">
                         {!isEditing && (
                           <button
                             onClick={handleEditToggle}
-                            className="text-gray-400 hover:text-gray-600"
+                            className={isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}
                           >
                             <Edit3 className="w-4 h-4" />
                           </button>
@@ -379,10 +383,10 @@ const UserProfile = () => {
 
                     {/* Member Since */}
                     {user.joinedDate && (
-                      <div className="flex items-center justify-between py-4">
-                        <span className="text-sm font-medium text-gray-600 w-24">Member Since</span>
+                      <div className={`flex items-center justify-between py-4 ${isDarkMode ? 'border-gray-700/50' : 'border-b border-gray-100'}`}>
+                        <span className={isDarkMode ? 'text-gray-400' : 'text-sm font-medium text-gray-600'} style={{ width: '96px' }}>Member Since</span>
                         <div className="flex-1 mx-4">
-                          <span className="text-gray-800">{formatDate(user.joinedDate)}</span>
+                          <span className={isDarkMode ? 'text-gray-300' : 'text-gray-800'}>{formatDate(user.joinedDate)}</span>
                         </div>
                         <div className="w-8"></div>
                       </div>
@@ -390,16 +394,16 @@ const UserProfile = () => {
 
                     {/* Action Buttons */}
                     {isEditing && (
-                      <div className="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-100">
+                      <div className={`flex justify-end space-x-3 mt-6 pt-6 ${isDarkMode ? 'border-gray-700/50' : 'border-t border-gray-100'}`}>
                         <button
                           onClick={handleEditToggle}
-                          className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                          className={isDarkMode ? 'px-4 py-2 text-gray-400 hover:text-gray-300' : 'px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors'}
                         >
                           Cancel
                         </button>
                         <button
                           onClick={handleSubmit}
-                          className="px-6 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg hover:from-pink-600 hover:to-purple-600 transition-all duration-300 shadow-sm"
+                          className={`px-6 py-2 ${isDarkMode ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' : 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'} rounded-lg hover:${isDarkMode ? 'bg-gray-600' : 'from-pink-600 to-purple-600'} transition-all duration-300 shadow-sm`}
                         >
                           Save Changes
                         </button>
@@ -409,27 +413,27 @@ const UserProfile = () => {
 
                   {/* Task Analytics */}
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-6">Task Analytics</h3>
+                    <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-800'} mb-6`}>Task Analytics</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="bg-gradient-to-br from-pink-400 to-rose-400 rounded-xl p-4 text-white">
+                      <div className={`bg-${isDarkMode ? 'gray-700' : 'gradient-to-br from-pink-400 to-rose-400'} rounded-xl p-4 text-white`}>
                         <Target className="w-6 h-6 mb-2" />
                         <h4 className="font-semibold">Total</h4>
                         <p className="text-2xl font-bold">{taskStats.total}</p>
                       </div>
                       
-                      <div className="bg-gradient-to-br from-purple-400 to-violet-400 rounded-xl p-4 text-white">
+                      <div className={`bg-${isDarkMode ? 'gray-600' : 'gradient-to-br from-purple-400 to-violet-400'} rounded-xl p-4 text-white`}>
                         <Circle className="w-6 h-6 mb-2" />
                         <h4 className="font-semibold">To Do</h4>
                         <p className="text-2xl font-bold">{taskStats.todo}</p>
                       </div>
                       
-                      <div className="bg-gradient-to-br from-indigo-400 to-blue-400 rounded-xl p-4 text-white">
+                      <div className={`bg-${isDarkMode ? 'gray-500' : 'gradient-to-br from-indigo-400 to-blue-400'} rounded-xl p-4 text-white`}>
                         <Activity className="w-6 h-6 mb-2" />
                         <h4 className="font-semibold">In Progress</h4>
                         <p className="text-2xl font-bold">{taskStats.inProgress}</p>
                       </div>
                       
-                      <div className="bg-gradient-to-br from-emerald-400 to-teal-400 rounded-xl p-4 text-white">
+                      <div className={`bg-${isDarkMode ? 'gray-400' : 'gradient-to-br from-emerald-400 to-teal-400'} rounded-xl p-4 text-white`}>
                         <CheckCircle className="w-6 h-6 mb-2" />
                         <h4 className="font-semibold">Done</h4>
                         <p className="text-2xl font-bold">{taskStats.done}</p>
@@ -437,14 +441,14 @@ const UserProfile = () => {
                     </div>
 
                     <div className="mt-6">
-                      <div className="bg-gray-200 rounded-full h-2 mb-2">
+                      <div className={isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} className={`bg-${isDarkMode ? 'gray-700' : 'gray-200'} rounded-full h-2 mb-2`}>
                         <div 
-                          className="bg-gradient-to-r from-pink-400 to-purple-400 h-2 rounded-full transition-all duration-500"
+                          className={`bg-${isDarkMode ? 'gray-500' : 'gradient-to-r from-pink-400 to-purple-400'} h-2 rounded-full transition-all duration-500`}
                           style={{ width: `${taskStats.completionRate}%` }}
                         ></div>
                       </div>
-                      <p className="text-sm text-gray-600">
-                        <span className="font-semibold text-purple-600">{taskStats.completionRate}%</span> completion rate
+                      <p className={isDarkMode ? 'text-gray-400' : 'text-sm text-gray-600'}>
+                        <span className={isDarkMode ? 'text-gray-300' : 'font-semibold text-purple-600'}>{taskStats.completionRate}%</span> completion rate
                       </p>
                     </div>
                   </div>
@@ -455,13 +459,13 @@ const UserProfile = () => {
               {activeSection !== 'account' && (
                 <div className="p-6">
                   <div className="text-center py-12">
-                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className={`w-16 h-16 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} rounded-full flex items-center justify-center mx-auto mb-4`}>
                       <Settings className="w-8 h-8 text-gray-400" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                    <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-800'} mb-2`}>
                       {menuItems.find(item => item.id === activeSection)?.label} Settings
                     </h3>
-                    <p className="text-gray-600">This section is coming soon!</p>
+                    <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>This section is coming soon!</p>
                   </div>
                 </div>
               )}
@@ -469,15 +473,15 @@ const UserProfile = () => {
           </div>
         </div>
 
-          {/* No Tasks Message */}
+        {/* No Tasks Message */}
         {tasks.length === 0 && activeSection === 'account' && (
-          <div className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-            <Circle className="w-16 h-16 text-gray-300 mx-auto mb-6" />
-            <h3 className="text-xl font-semibold text-gray-400 mb-2">No tasks yet</h3>
-            <p className="text-gray-400 mb-4">Start your productivity journey by creating your first task!</p>
+          <div className={`mt-8 ${isDarkMode ? 'bg-gray-800/80' : 'bg-white'} rounded-2xl shadow-sm ${isDarkMode ? 'border-gray-700/50' : 'border border-gray-100'} p-12 text-center`}>
+            <Circle className={`w-16 h-16 ${isDarkMode ? 'text-gray-500' : 'text-gray-300'} mx-auto mb-6`} />
+            <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-400' : 'text-gray-400'} mb-2`}>No tasks yet</h3>
+            <p className={isDarkMode ? 'text-gray-500' : 'text-gray-400 mb-4'}>Start your productivity journey by creating your first task!</p>
             <button 
               onClick={() => navigate('/tasks')}
-              className="px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg hover:from-pink-600 hover:to-purple-600 transition-all duration-300 shadow-sm"
+              className={`px-6 py-3 ${isDarkMode ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' : 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'} rounded-lg hover:${isDarkMode ? 'bg-gray-600' : 'from-pink-600 to-purple-600'} transition-all duration-300 shadow-sm`}
             >
               Create Your First Task
             </button>

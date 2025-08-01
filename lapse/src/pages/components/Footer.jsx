@@ -35,7 +35,7 @@ const Footer = ({ isDarkMode }) => {
             <ul className="space-y-2">
               <li>
                 <a 
-                  href="/#how-it-works" 
+                  href="#how-it-works" 
                   className={`transition ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-400 hover:text-[#A7ABDE]'}`}
                 >
                   How it works
@@ -43,7 +43,7 @@ const Footer = ({ isDarkMode }) => {
               </li>
               <li>
                 <a 
-                  href="/#about" 
+                  href="#about" 
                   className={`transition ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-400 hover:text-[#A7ABDE]'}`}
                 >
                   About Us
@@ -51,7 +51,7 @@ const Footer = ({ isDarkMode }) => {
               </li>
               <li>
                 <a 
-                  href="/#contact" 
+                  href="#contact" 
                   className={`transition ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-400 hover:text-[#A7ABDE]'}`}
                 >
                   Contact

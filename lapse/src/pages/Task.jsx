@@ -33,9 +33,9 @@ const TaskManager = ({ isDarkMode }) => {
   const navigate = useNavigate();
 
   const columns = [
-    { id: 'To-Do', title: 'To Do', color: isDarkMode ? 'from-gray-700 to-gray-600' : 'from-pink-400 to-rose-400' },
-    { id: 'In-Progress', title: 'In Progress', color: isDarkMode ? 'from-gray-600 to-gray-500' : 'from-purple-400 to-violet-400' },
-    { id: 'Done', title: 'Done', color: isDarkMode ? 'from-gray-500 to-gray-400' : 'from-indigo-400 to-blue-400' }
+    { id: 'To-Do', title: 'To Do', color: isDarkMode ? 'from-gray-700 to-gray-600' : 'from-pink-600 to-rose-600' },
+    { id: 'In-Progress', title: 'In Progress', color: isDarkMode ? 'from-gray-600 to-gray-500' : 'from-purple-600 to-violet-600' },
+    { id: 'Done', title: 'Done', color: isDarkMode ? 'from-gray-500 to-gray-400' : 'from-indigo-600 to-blue-600' }
   ];
 
   const priorityColors = {
@@ -219,7 +219,7 @@ const TaskManager = ({ isDarkMode }) => {
             >
               <div className={`bg-${column.color} p-4`}>
                 <div className="flex items-center justify-between">
-                  <h3 className="text-white font-semibold text-lg font-cute">{column.title}</h3>
+                  <h3 className="text-pink-400-purple-400 font-semibold text-lg font-cute">{column.title}</h3>
                   <span className="bg-white/20 text-white px-2 py-1 rounded-full text-sm font-medium font-cute">
                     {getTasksByStatus(column.id).length}
                   </span>
@@ -232,7 +232,7 @@ const TaskManager = ({ isDarkMode }) => {
                     key={task.id}
                     draggable
                     onDragStart={(e) => handleDragStart(e, task)}
-                    className={`bg-${isDarkMode ? 'gray-800/80' : 'gradient-to-br from-pink-50 to-purple-50'} rounded-xl p-4 cursor-move hover:shadow-lg transition-all duration-200 ${isDarkMode ? 'border-gray-700/50' : 'border border-pink-100'} hover:${isDarkMode ? 'border-gray-600' : 'border-purple-200'} group`}
+                    className={`bg-${isDarkMode ? 'gray-800/80' : 'gradient-to-br from-white to-gray-50'} rounded-xl p-4 cursor-move hover:shadow-lg transition-all duration-200 ${isDarkMode ? 'border-gray-700/50' : 'border border-pink-100'} hover:${isDarkMode ? 'border-gray-600' : 'border-purple-200'} group`}
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center">
@@ -282,7 +282,7 @@ const TaskManager = ({ isDarkMode }) => {
 
                 {getTasksByStatus(column.id).length === 0 && (
                   <div className="text-center py-12">
-                    <Circle className={`w-12 h-12 ${isDarkMode ? 'text-gray-600' : 'text-gray-200'} mx-auto mb-3`} />
+                    <Circle className={`w-12 h-12 ${isDarkMode ? 'text-gray-600' : 'text-gray-400'} mx-auto mb-3`} />
                     <p className={`text-${isDarkMode ? 'gray-500' : 'gray-400'} text-sm font-cute`}>No tasks yet</p>
                   </div>
                 )}

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Homepage from './pages/Homepage';
 import AboutUs from './pages/AboutUs';
-import Products from './pages/Products';
 import NavBar from './pages/components/NavBar';
 import FormData from './pages/Form';
 import { ListandKeys } from './pages/components/Buttons';
@@ -73,7 +72,6 @@ const AppContent = () => {
       <Routes>
         <Route path="/" element={<Homepage isDarkMode={isDarkMode} />} />
         <Route path="/aboutus" element={<AboutUs isDarkMode={isDarkMode} />} />
-        <Route path="/products" element={<Products isDarkMode={isDarkMode} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/formdata" element={<FormData isDarkMode={isDarkMode} />} />
         <Route path="/listsandkeys" element={<ListandKeys isDarkMode={isDarkMode} />} />
